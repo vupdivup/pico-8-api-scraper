@@ -1,8 +1,10 @@
 import re
 import json
+import os
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 from constants import OUTPUT_PATH
+from config import nonstandard_signatures as nss
 
 def main(html):
     """Scrape function signatures from the PICO-8 manual .html document.
@@ -18,16 +20,6 @@ def main(html):
     # but doesn't match nested function calls within headings
     # note that params can have digits within them
     signature_pat = re.compile(r'^\s*[A-Z]+\([A-Z0-9, _\[\]]*\)\s*$')
-
-    # TODO: import this from external file
-    # signatures that don't match pattern but should be included
-    exceptions = [
-        ' SSPR(SX, SY, SW, SH, DX, DY, [DW, DH], [FLIP_X], [FLIP_Y]]',
-        ' FOLDER',
-        ' RESUME',
-        ' REBOOT',
-        ' YIELD'
-        ]
 
     api = []
     categ = None
@@ -57,7 +49,7 @@ def main(html):
 
         # check for function signature
         h5 = tag.find('h5')
-        if h5 and (signature_pat.match(h5.string) or h5.string in exceptions):
+        if h5 and (signature_pat.match(h5.string) or h5.string in nss):
             # mark body text after heading for extraction
             desc_flag = True
 
@@ -117,6 +109,9 @@ def main(html):
     for i, sign in enumerate(reversed(api)):
         if sign['desc'] == '' and i > 0:
             sign['desc'] = api[-i]['desc']
+
+    # create output directory
+    os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
 
     # export
     with open(OUTPUT_PATH, 'w') as f:
