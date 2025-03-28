@@ -1,0 +1,1516 @@
+[
+  {
+    "name": "load",
+    "category": "System",
+    "params": [
+      {
+        "name": "filename",
+        "optional": false
+      },
+      {
+        "name": "breadcrumb",
+        "optional": true
+      },
+      {
+        "name": "param_str",
+        "optional": true
+      }
+    ],
+    "desc": "Load or save a cartridge\n\nWhen loading from a running cartridge, the loaded cartridge is immediately run with parameter string PARAM_STR (accessible with STAT(6)), and a menu item is inserted and named BREADCRUMB, that returns the user to the previous cartridge.\n\nFilenames that start with '#' are taken to be a BBS cart id, that is immediately downloaded and run:\n\n```\n> LOAD(\"#MYGAME_LEVEL2\", \"BACK TO MAP\", \"LIVES=\"..LIVES)\n```\n\nIf the id is the cart's parent post, or a revision number is not specified, then the latest version is fetched. BBS carts can be loaded from other BBS carts or local carts, but not from  exported carts."
+  },
+  {
+    "name": "save",
+    "category": "System",
+    "params": [
+      {
+        "name": "filename",
+        "optional": false
+      }
+    ],
+    "desc": "Load or save a cartridge\n\nWhen loading from a running cartridge, the loaded cartridge is immediately run with parameter string PARAM_STR (accessible with STAT(6)), and a menu item is inserted and named BREADCRUMB, that returns the user to the previous cartridge.\n\nFilenames that start with '#' are taken to be a BBS cart id, that is immediately downloaded and run:\n\n```\n> LOAD(\"#MYGAME_LEVEL2\", \"BACK TO MAP\", \"LIVES=\"..LIVES)\n```\n\nIf the id is the cart's parent post, or a revision number is not specified, then the latest version is fetched. BBS carts can be loaded from other BBS carts or local carts, but not from  exported carts."
+  },
+  {
+    "name": "folder",
+    "category": "System",
+    "params": [],
+    "desc": "Open the carts folder in the host operating system."
+  },
+  {
+    "name": "ls",
+    "category": "System",
+    "params": [
+      {
+        "name": "directory",
+        "optional": true
+      }
+    ],
+    "desc": "List .p8 and .p8.png files in given directory (folder), relative to the current directory. Items that are directories end in a slash (e.g. \"foo/\").\n\nWhen called from a running cartridge, LS can only be used locally and returns a table of the results. When called from a BBS cart, LS returns nil.\n\nDirectories can only resolve inside of PICO-8's virtual drive; LS(\"..\") from the root directory will resolve to the root directory."
+  },
+  {
+    "name": "run",
+    "category": "System",
+    "params": [
+      {
+        "name": "param_str",
+        "optional": true
+      }
+    ],
+    "desc": "Run from the start of the program.\n\nRUN() Can be called from inside a running program to reset.\n\nWhen PARAM_STR is supplied, it can be accessed during runtime with STAT(6)"
+  },
+  {
+    "name": "stop",
+    "category": "System",
+    "params": [
+      {
+        "name": "message",
+        "optional": true
+      }
+    ],
+    "desc": "Stop the cart and optionally print a message."
+  },
+  {
+    "name": "resume",
+    "category": "System",
+    "params": [],
+    "desc": "Resume the program. Use R for short.\n\nUse a single \".\" from the commandline to advance a single frame. This enters frame-by-frame mode, that can be read with stat(110). While frame-by-frame mode is active, entering an empty command (by pressing enter) advances one frames."
+  },
+  {
+    "name": "assert",
+    "category": "System",
+    "params": [
+      {
+        "name": "condition",
+        "optional": false
+      },
+      {
+        "name": "message",
+        "optional": true
+      }
+    ],
+    "desc": "If CONDITION is false, stop the program and print MESSAGE if it is given. This can be useful for debugging cartridges, by ASSERT()'ing that things that you expect to be true are indeed true.\n\n```\nASSERT(ADDR >= 0 AND ADDR <= 0x7FFF, \"OUT OF RANGE\")\nPOKE(ADDR, 42) -- THE MEMORY ADDRESS IS OK, FOR SURE!\n```"
+  },
+  {
+    "name": "reboot",
+    "category": "System",
+    "params": [],
+    "desc": "Reboot the machine Useful for starting a new project"
+  },
+  {
+    "name": "reset",
+    "category": "System",
+    "params": [],
+    "desc": "Reset the values in RAM from 0x5f00..0x5f7f to their default values.  This includes the palette, camera position, clipping and fill pattern. If you get lost at the command prompt because the draw state makes viewing text  impossible, try typing RESET! It can also be called from a running program."
+  },
+  {
+    "name": "info",
+    "category": "System",
+    "params": [],
+    "desc": "Print out some information about the cartridge: Code size, tokens, compressed size\n\nAlso displayed:\n\nUNSAVED CHANGES   When the cartridge in memory differs to the one on disk\nEXTERNAL CHANGES  When the cartridge on disk has changed since it was loaded\n  (e.g. by editing the program using a separate text editor)"
+  },
+  {
+    "name": "flip",
+    "category": "System",
+    "params": [],
+    "desc": "Flip the back buffer to screen and wait for next frame. This call is not needed when there is a _DRAW() or _UPDATE() callback defined, as the flip is performed automatically. But when using a custom main loop, a call to FLIP is normally needed:\n\n```\n::_::\nCLS()\nFOR I=1,100 DO\n  A=I/50 - T()\n  X=64+COS(A)*I\n  Y=64+SIN(A)*I\n  CIRCFILL(X,Y,1,8+(I/4)%8)\nEND\nFLIP()GOTO _\n```\n\nIf your program does not call FLIP before a frame is up, and a _DRAW() callback is not in progress, the current contents of the back buffer are copied to screen."
+  },
+  {
+    "name": "printh",
+    "category": "System",
+    "params": [
+      {
+        "name": "str",
+        "optional": false
+      },
+      {
+        "name": "filename",
+        "optional": true
+      },
+      {
+        "name": "overwrite",
+        "optional": true
+      },
+      {
+        "name": "save_to_desktop",
+        "optional": true
+      }
+    ],
+    "desc": "Print a string to the host operating system's console for debugging.\n\nIf filename is set, append the string to a file on the host operating system (in the current directory by default -- use FOLDER to view).\n\nSetting OVERWRITE to true causes that file to be overwritten rather than appended.\n\nSetting SAVE_TO_DESKTOP to true saves to the desktop instead of the current path.\n\nUse a filename of \"@clip\" to write to the host's clipboard.\n\nUse stat(4) to read the clipboard, but the contents of the clipboard are only available after pressing CTRL-V during runtime (for security)."
+  },
+  {
+    "name": "time",
+    "category": "System",
+    "params": [],
+    "desc": "Returns the number of seconds elapsed since the cartridge was run.\n\nThis is not the real-world time, but is calculated by counting the number of times\n\nthe same result."
+  },
+  {
+    "name": "t",
+    "category": "System",
+    "params": [],
+    "desc": "Returns the number of seconds elapsed since the cartridge was run.\n\nThis is not the real-world time, but is calculated by counting the number of times\n\nthe same result."
+  },
+  {
+    "name": "stat",
+    "category": "System",
+    "params": [
+      {
+        "name": "x",
+        "optional": false
+      }
+    ],
+    "desc": "Get system status where X is:\n\n```\n0  Memory usage (0..2048)\n1  CPU used since last flip (1.0 == 100% CPU)\n4  Clipboard contents (after user has pressed CTRL-V)\n6  Parameter string\n7  Current framerate\n \n46..49  Index of currently playing SFX on channels 0..3\n50..53  Note number (0..31) on channel 0..3\n54      Currently playing pattern index\n55      Total patterns played\n56      Ticks played on current pattern\n57      (Boolean) TRUE when music is playing\n \n80..85  UTC time: year, month, day, hour, minute, second\n90..95  Local time\n \n100     Current breadcrumb label, or nil\n110     Returns true when in frame-by-frame mode\n```\n\nAudio values 16..26 are the legacy version of audio state queries 46..56. They only report on the current state of the audio mixer, which changes only ~20 times a second (depending on the host sound driver and other factors). 46..56 instead stores a history of mixer state at each tick to give a higher resolution estimate of the currently audible state."
+  },
+  {
+    "name": "extcmd",
+    "category": "System",
+    "params": [
+      {
+        "name": "cmd_str",
+        "optional": false
+      },
+      {
+        "name": "p1",
+        "optional": true
+      },
+      {
+        "name": "p2",
+        "optional": true
+      }
+    ],
+    "desc": "Special system command, where CMD_STR is a string:\n\n\"pause\"         request the pause menu be opened\n\"reset\"         request a cart reset\n\"go_back\"       return to the previous cart if there is one\n\"label\"         set cart label to contents of screen\n\"screen\"        save a screenshot\n\"rec\"           set video start point\n\"rec_frames\"    set video start point in frames mode\n\"video\"         save a .gif to desktop\n\"audio_rec\"     start recording audio\n\"audio_end\"     save recorded audio to desktop (no supported from web)\n\"shutdown\"      quit cartridge (from exported binary)\n\"folder\"        open current working folder on the host operating system\n\"set_filename\"  set the filename for screenshots / gifs / audio recordings\n\"set_title\"     set the host window title\n\nSome commands have optional number parameters:\n\n\"video\" and \"screen\": P1: an integer scaling factor that overrides the system setting. P2: when > 0, save to the current folder instead of to desktop\n\n\"audio_end\" P1: when > 0, save to the current folder instead of to desktop"
+  },
+  {
+    "name": "clip",
+    "category": "Graphics",
+    "params": [
+      {
+        "name": "x",
+        "optional": false
+      },
+      {
+        "name": "y",
+        "optional": false
+      },
+      {
+        "name": "w",
+        "optional": false
+      },
+      {
+        "name": "h",
+        "optional": false
+      },
+      {
+        "name": "clip_previous",
+        "optional": true
+      }
+    ],
+    "desc": "Sets the clipping rectangle in pixels. All drawing operations will be clipped to the rectangle at x, y with a width and height of w,h.\n\nCLIP() to reset.\n\nWhen CLIP_PREVIOUS is true, clip the new clipping region by the old one."
+  },
+  {
+    "name": "pset",
+    "category": "Graphics",
+    "params": [
+      {
+        "name": "x",
+        "optional": false
+      },
+      {
+        "name": "y",
+        "optional": false
+      },
+      {
+        "name": "col",
+        "optional": true
+      }
+    ],
+    "desc": "Sets the pixel at x, y to colour index COL (0..15).\n\nWhen COL is not specified, the current draw colour is used.\n\n```\nFOR Y=0,127 DO\n  FOR X=0,127 DO\n    PSET(X, Y, X*Y/8)\n  END\nEND\n```"
+  },
+  {
+    "name": "pget",
+    "category": "Graphics",
+    "params": [
+      {
+        "name": "x",
+        "optional": false
+      },
+      {
+        "name": "y",
+        "optional": false
+      }
+    ],
+    "desc": "Returns the colour of a pixel on the screen at (X, Y).\n\n```\nWHILE (TRUE) DO\n  X, Y = RND(128), RND(128)\n  DX, DY = RND(4)-2, RND(4)-2\n  PSET(X, Y, PGET(DX+X, DY+Y))\nEND\n```\n\nWhen X and Y are out of bounds, PGET returns 0. A custom return value can be specified with:\n\n```\nPOKE(0x5f36, 0x10)\nPOKE(0x5f5B, NEWVAL)\n```"
+  },
+  {
+    "name": "sget",
+    "category": "Graphics",
+    "params": [
+      {
+        "name": "x",
+        "optional": false
+      },
+      {
+        "name": "y",
+        "optional": false
+      }
+    ],
+    "desc": "Get or set the colour (COL) of a sprite sheet pixel.\n\nWhen X and Y are out of bounds, SGET returns 0. A custom value can be specified with:\n\n```\nPOKE(0x5f36, 0x10)\nPOKE(0x5f59, NEWVAL)\n```"
+  },
+  {
+    "name": "sset",
+    "category": "Graphics",
+    "params": [
+      {
+        "name": "x",
+        "optional": false
+      },
+      {
+        "name": "y",
+        "optional": false
+      },
+      {
+        "name": "col",
+        "optional": true
+      }
+    ],
+    "desc": "Get or set the colour (COL) of a sprite sheet pixel.\n\nWhen X and Y are out of bounds, SGET returns 0. A custom value can be specified with:\n\n```\nPOKE(0x5f36, 0x10)\nPOKE(0x5f59, NEWVAL)\n```"
+  },
+  {
+    "name": "fget",
+    "category": "Graphics",
+    "params": [
+      {
+        "name": "n",
+        "optional": false
+      },
+      {
+        "name": "f",
+        "optional": true
+      }
+    ],
+    "desc": "Get or set the value (VAL) of sprite N's flag F.\n\nF is the flag index 0..7.\n\nVAL is TRUE or FALSE.\n\nThe initial state of flags 0..7 are settable in the sprite editor, so can be used to create custom sprite attributes. It is also possible to draw only a subset of map tiles by providing a mask in MAP().\n\nWhen F is omitted, all flags are retrieved/set as a single bitfield.\n\n```\nFSET(2, 1 | 2 | 8)   -- SETS BITS 0,1 AND 3\nFSET(2, 4, TRUE)     -- SETS BIT 4\nPRINT(FGET(2))       -- 27 (1 | 2 | 8 | 16)\n```"
+  },
+  {
+    "name": "fset",
+    "category": "Graphics",
+    "params": [
+      {
+        "name": "n",
+        "optional": false
+      },
+      {
+        "name": "f",
+        "optional": true
+      },
+      {
+        "name": "val",
+        "optional": false
+      }
+    ],
+    "desc": "Get or set the value (VAL) of sprite N's flag F.\n\nF is the flag index 0..7.\n\nVAL is TRUE or FALSE.\n\nThe initial state of flags 0..7 are settable in the sprite editor, so can be used to create custom sprite attributes. It is also possible to draw only a subset of map tiles by providing a mask in MAP().\n\nWhen F is omitted, all flags are retrieved/set as a single bitfield.\n\n```\nFSET(2, 1 | 2 | 8)   -- SETS BITS 0,1 AND 3\nFSET(2, 4, TRUE)     -- SETS BIT 4\nPRINT(FGET(2))       -- 27 (1 | 2 | 8 | 16)\n```"
+  },
+  {
+    "name": "print",
+    "category": "Graphics",
+    "params": [
+      {
+        "name": "str",
+        "optional": false
+      },
+      {
+        "name": "x",
+        "optional": false
+      },
+      {
+        "name": "y",
+        "optional": false
+      },
+      {
+        "name": "col",
+        "optional": true
+      }
+    ],
+    "desc": "Print a string STR and optionally set the draw colour to COL.\n\nShortcut: written on a single line, ? can be used to call print without brackets:\n\n```\n?\"HI\"\n```\n\nWhen X, Y are not specified, a newline is automatically appended. This can be omitted by ending the string with an explicit termination control character:\n\n```\n?\"THE QUICK BROWN FOX\\0\"\n```\n\nAdditionally, when X, Y are not specified, printing text below 122 causes  the console to scroll. This can be disabled during runtime with POKE(0x5f36,0x40).\n\nPRINT returns the right-most x position that occurred while printing. This can be used to find out the width of some text by printing it off-screen:\n\n```\nW = PRINT(\"HOGE\", 0, -20) -- returns 16\n```\n\nSee Appendix A (P8SCII) for information about control codes and custom fonts."
+  },
+  {
+    "name": "print",
+    "category": "Graphics",
+    "params": [
+      {
+        "name": "str",
+        "optional": false
+      },
+      {
+        "name": "col",
+        "optional": true
+      }
+    ],
+    "desc": "Print a string STR and optionally set the draw colour to COL.\n\nShortcut: written on a single line, ? can be used to call print without brackets:\n\n```\n?\"HI\"\n```\n\nWhen X, Y are not specified, a newline is automatically appended. This can be omitted by ending the string with an explicit termination control character:\n\n```\n?\"THE QUICK BROWN FOX\\0\"\n```\n\nAdditionally, when X, Y are not specified, printing text below 122 causes  the console to scroll. This can be disabled during runtime with POKE(0x5f36,0x40).\n\nPRINT returns the right-most x position that occurred while printing. This can be used to find out the width of some text by printing it off-screen:\n\n```\nW = PRINT(\"HOGE\", 0, -20) -- returns 16\n```\n\nSee Appendix A (P8SCII) for information about control codes and custom fonts."
+  },
+  {
+    "name": "cursor",
+    "category": "Graphics",
+    "params": [
+      {
+        "name": "x",
+        "optional": false
+      },
+      {
+        "name": "y",
+        "optional": false
+      },
+      {
+        "name": "col",
+        "optional": true
+      }
+    ],
+    "desc": "Set the cursor position.\n\nIf COL is specified, also set the current colour."
+  },
+  {
+    "name": "color",
+    "category": "Graphics",
+    "params": [
+      {
+        "name": "col",
+        "optional": true
+      }
+    ],
+    "desc": "Set the current colour to be used by drawing functions.\n\nIf COL is not specified, the current colour is set to 6"
+  },
+  {
+    "name": "cls",
+    "category": "Graphics",
+    "params": [
+      {
+        "name": "col",
+        "optional": true
+      }
+    ],
+    "desc": "Clear the screen and reset the clipping rectangle.\n\nCOL defaults to 0 (black)"
+  },
+  {
+    "name": "camera",
+    "category": "Graphics",
+    "params": [
+      {
+        "name": "x",
+        "optional": true
+      },
+      {
+        "name": "y",
+        "optional": true
+      }
+    ],
+    "desc": "Set a screen offset of -x, -y for all drawing operations\n\nCAMERA() to reset"
+  },
+  {
+    "name": "circ",
+    "category": "Graphics",
+    "params": [
+      {
+        "name": "x",
+        "optional": false
+      },
+      {
+        "name": "y",
+        "optional": false
+      },
+      {
+        "name": "r",
+        "optional": false
+      },
+      {
+        "name": "col",
+        "optional": true
+      }
+    ],
+    "desc": "Draw a circle or filled circle at x,y with radius r\n\nIf r is negative, the circle is not drawn.\n\nWhen bits 0x1800.0000 are set in COL, and 0x5F34 & 2 == 2, the circle is drawn inverted."
+  },
+  {
+    "name": "circfill",
+    "category": "Graphics",
+    "params": [
+      {
+        "name": "x",
+        "optional": false
+      },
+      {
+        "name": "y",
+        "optional": false
+      },
+      {
+        "name": "r",
+        "optional": false
+      },
+      {
+        "name": "col",
+        "optional": true
+      }
+    ],
+    "desc": "Draw a circle or filled circle at x,y with radius r\n\nIf r is negative, the circle is not drawn.\n\nWhen bits 0x1800.0000 are set in COL, and 0x5F34 & 2 == 2, the circle is drawn inverted."
+  },
+  {
+    "name": "oval",
+    "category": "Graphics",
+    "params": [
+      {
+        "name": "x0",
+        "optional": false
+      },
+      {
+        "name": "y0",
+        "optional": false
+      },
+      {
+        "name": "x1",
+        "optional": false
+      },
+      {
+        "name": "y1",
+        "optional": false
+      },
+      {
+        "name": "col",
+        "optional": true
+      }
+    ],
+    "desc": "Draw an oval that is symmetrical in x and y (an ellipse), with the given bounding rectangle."
+  },
+  {
+    "name": "ovalfill",
+    "category": "Graphics",
+    "params": [
+      {
+        "name": "x0",
+        "optional": false
+      },
+      {
+        "name": "y0",
+        "optional": false
+      },
+      {
+        "name": "x1",
+        "optional": false
+      },
+      {
+        "name": "y1",
+        "optional": false
+      },
+      {
+        "name": "col",
+        "optional": true
+      }
+    ],
+    "desc": "Draw an oval that is symmetrical in x and y (an ellipse), with the given bounding rectangle."
+  },
+  {
+    "name": "line",
+    "category": "Graphics",
+    "params": [
+      {
+        "name": "x0",
+        "optional": false
+      },
+      {
+        "name": "y0",
+        "optional": false
+      },
+      {
+        "name": "x1",
+        "optional": true
+      },
+      {
+        "name": "y1",
+        "optional": false
+      },
+      {
+        "name": "col",
+        "optional": true
+      }
+    ],
+    "desc": "Draw a line from (X0, Y0) to (X1, Y1)\n\nIf (X1, Y1) are not given, the end of the last drawn line is used.\n\nLINE() with no parameters means that the next call to LINE(X1, Y1) will only set the end points without drawing.\n\n```\nCLS()\nLINE()\nFOR I=0,6 DO\n  LINE(64+COS(I/6)*20, 64+SIN(I/6)*20, 8+I)\nEND\n```"
+  },
+  {
+    "name": "rect",
+    "category": "Graphics",
+    "params": [
+      {
+        "name": "x0",
+        "optional": false
+      },
+      {
+        "name": "y0",
+        "optional": false
+      },
+      {
+        "name": "x1",
+        "optional": false
+      },
+      {
+        "name": "y1",
+        "optional": false
+      },
+      {
+        "name": "col",
+        "optional": true
+      }
+    ],
+    "desc": "Draw a rectangle or filled rectangle with corners at (X0, Y0), (X1, Y1)."
+  },
+  {
+    "name": "rectfill",
+    "category": "Graphics",
+    "params": [
+      {
+        "name": "x0",
+        "optional": false
+      },
+      {
+        "name": "y0",
+        "optional": false
+      },
+      {
+        "name": "x1",
+        "optional": false
+      },
+      {
+        "name": "y1",
+        "optional": false
+      },
+      {
+        "name": "col",
+        "optional": true
+      }
+    ],
+    "desc": "Draw a rectangle or filled rectangle with corners at (X0, Y0), (X1, Y1)."
+  },
+  {
+    "name": "pal",
+    "category": "Graphics",
+    "params": [
+      {
+        "name": "c0",
+        "optional": false
+      },
+      {
+        "name": "c1",
+        "optional": false
+      },
+      {
+        "name": "p",
+        "optional": true
+      }
+    ],
+    "desc": "PAL() swaps colour c0 for c1 for one of three palette re-mappings (p defaults to 0):\n\n0: Draw Palette\n\nThe draw palette re-maps colours when they are drawn. For example, an orange flower sprite can be drawn as a red flower by setting the 9th palette value to 8:\n\n```\nPAL(9,8)     -- draw subsequent orange (colour 9) pixels as red (colour 8)\nSPR(1,70,60) -- any orange pixels in the sprite will be drawn with red instead\n```\n\nChanging the draw palette does not affect anything that was already drawn to the screen.\n\n1: Display Palette\n\nThe display palette re-maps the whole screen when it is displayed at the end of a frame. For example, if you boot PICO-8 and then type PAL(6,14,1), you can see all of the gray (colour 6) text immediate change to pink (colour 14) even though it has already been drawn. This is useful for screen-wide effects such as fading in/out.\n\n2: Secondary Palette\n\nUsed by FILLP() for drawing sprites. This provides a mapping from a single 4-bit colour index to two 4-bit colour indexes.\n\nPAL()  resets all palettes to system defaults (including transparency values)\nPAL(P) resets a particular palette (0..2) to system defaults"
+  },
+  {
+    "name": "pal",
+    "category": "Graphics",
+    "params": [
+      {
+        "name": "tbl",
+        "optional": false
+      },
+      {
+        "name": "p",
+        "optional": true
+      }
+    ],
+    "desc": "When the first parameter of pal is a table, colours are assigned for each entry. For example, to re-map colour 12 and 14 to red:\n\n```\nPAL({[12]=9, [14]=8})\n```\n\nOr to re-colour the whole screen shades of gray (including everything that is already drawn):\n\n```\nPAL({1,1,5,5,5,6,7,13,6,7,7,6,13,6,7,1}, 1)\n```\n\nBecause table indexes start at 1, colour 0 is given at the end in this case."
+  },
+  {
+    "name": "palt",
+    "category": "Graphics",
+    "params": [
+      {
+        "name": "c",
+        "optional": false
+      },
+      {
+        "name": "t",
+        "optional": true
+      }
+    ],
+    "desc": "Set transparency for colour index to T (boolean) Transparency is observed by SPR(), SSPR(), MAP() AND TLINE()\n\n```\nPALT(8, TRUE) -- RED PIXELS NOT DRAWN IN SUBSEQUENT SPRITE/TLINE DRAW CALLS\n```\n\nPALT() resets to default: all colours opaque except colour 0\n\nWhen C is the only parameter, it is treated as a bitfield used to set all 16 values. For example: to set colours 0 and 1 as transparent:\n\n```\nPALT(0B1100000000000000)\n```"
+  },
+  {
+    "name": "spr",
+    "category": "Graphics",
+    "params": [
+      {
+        "name": "n",
+        "optional": false
+      },
+      {
+        "name": "x",
+        "optional": false
+      },
+      {
+        "name": "y",
+        "optional": false
+      },
+      {
+        "name": "w",
+        "optional": true
+      },
+      {
+        "name": "h",
+        "optional": true
+      },
+      {
+        "name": "flip_x",
+        "optional": true
+      },
+      {
+        "name": "flip_y",
+        "optional": true
+      }
+    ],
+    "desc": "Draw sprite N (0..255) at position X,Y\n\nW (width) and H (height) are 1, 1 by default and specify how many sprites wide to blit.\n\nColour 0 drawn as transparent by default (see PALT())\n\nWhen FLIP_X is TRUE, flip horizontally.\n\nWhen FLIP_Y is TRUE, flip vertically."
+  },
+  {
+    "name": "sspr",
+    "category": "Graphics",
+    "params": [
+      {
+        "name": "sx",
+        "optional": false
+      },
+      {
+        "name": "sy",
+        "optional": false
+      },
+      {
+        "name": "sw",
+        "optional": false
+      },
+      {
+        "name": "sh",
+        "optional": false
+      },
+      {
+        "name": "dx",
+        "optional": false
+      },
+      {
+        "name": "dy",
+        "optional": false
+      },
+      {
+        "name": "dw",
+        "optional": true
+      },
+      {
+        "name": "dh",
+        "optional": true
+      },
+      {
+        "name": "flip_x",
+        "optional": true
+      },
+      {
+        "name": "flip_y",
+        "optional": true
+      }
+    ],
+    "desc": "Stretch a rectangle of the sprite sheet (sx, sy, sw, sh) to a destination rectangle on the screen (dx, dy, dw, dh). In both cases, the x and y values are coordinates (in pixels) of the rectangle's top left corner, with a width of w, h.\n\nColour 0 drawn as transparent by default (see PALT())\n\ndw, dh defaults to sw, sh\n\nWhen FLIP_X is TRUE, flip horizontally.\n\nWhen FLIP_Y is TRUE, flip vertically."
+  },
+  {
+    "name": "fillp",
+    "category": "Graphics",
+    "params": [
+      {
+        "name": "p",
+        "optional": false
+      }
+    ],
+    "desc": "The PICO-8 fill pattern is a 4x4 2-colour tiled pattern observed by: CIRC() CIRCFILL() RECT() RECTFILL() OVAL() OVALFILL() PSET() LINE()\n\nP is a bitfield in reading order starting from the highest bit. To calculate the value of P for a desired pattern, add the bit values together:\n\n.-----------------------.\n  |32768|16384| 8192| 4096|\n  |-----|-----|-----|-----|\n  | 2048| 1024| 512 | 256 |\n  |-----|-----|-----|-----|\n  | 128 |  64 |  32 |  16 |\n  |-----|-----|-----|-----|\n  |  8  |  4  |  2  |  1  |\n  '-----------------------'\n\nFor example, FILLP(4+8+64+128+  256+512+4096+8192) would create a checkerboard pattern.\n\nThis can be more neatly expressed in binary: FILLP(0b0011001111001100).\n\nThe default fill pattern is 0, which means a single solid colour is drawn.\n\nTo specify a second colour for the pattern, use the high bits of any colour parameter:\n\n```\nFILLP(0b0011010101101000)\nCIRCFILL(64,64,20, 0x4E) -- brown and pink\n```\n\nAdditional settings are given in bits 0b0.111:\n\n0b0.100 Transparency\n\nWhen this bit is set, the second colour is not drawn\n\n```\n-- checkboard with transparent squares\nFILLP(0b0011001111001100.1)\n```\n\n0b0.010 Apply to Sprites\n\nWhen set, the fill pattern is applied to sprites (spr, sspr, map, tline), using a colour mapping provided by the secondary palette.\n\nEach pixel value in the sprite (after applying the draw palette as usual) is taken to be an index into the secondary palette. Each entry in the secondary palette contains the two colours used to render the fill pattern. For example, to draw a white and red (7 and 8) checkerboard pattern for only blue pixels (colour 12) in a sprite:\n\n```\nFOR I=0,15 DO PAL(I, I+I*16, 2) END  --  all other colours map to themselves\nPAL(12, 0x87, 2)                     --  remap colour 12 in the secondary palette\n \nFILLP(0b0011001111001100.01)         --  checkerboard palette, applied to sprites\nSPR(1, 64,64)                        --  draw the sprite\n```\n\n0b0.001 Apply Secondary Palette Globally\n\nWhen set, the secondary palette mapping is also applied by all draw functions that respect fill patterns (circfill, line etc). This can be useful when used in  conjunction with sprite drawing functions, so that the colour index of each sprite  pixel means the same thing as the colour index supplied to the drawing functions.\n\n```\nFILLP(0b0011001111001100.001)\nPAL(12, 0x87, 2)\nCIRCFILL(64,64,20,12)                -- red and white checkerboard circle\n```\n\nThe secondary palette mapping is applied after the regular draw palette mapping. So the following would also draw a red and white checkered circle:\n\n```\nPAL(3,12)\nCIRCFILL(64,64,20,3)\n```\n\nThe fill pattern can also be set by setting bits in any colour parameter (for example, the parameter to COLOR(), or the last parameter to LINE(), RECT() etc.\n\nPOKE(0x5F34, 0x3) -- 0x1 enable fillpattern in high bits  0x2 enable inversion mode\nCIRCFILL(64,64,20, 0x114E.ABCD) -- sets fill pattern to ABCD\n\nWhen using the colour parameter to set the fill pattern, the following bits are used:\n\nbit  0x1000.0000 this needs to be set: it means \"observe bits 0xf00.ffff\"\nbit  0x0100.0000 transparency\nbit  0x0200.0000 apply to sprites\nbit  0x0400.0000 apply secondary palette globally\nbit  0x0800.0000 invert the drawing operation (circfill/ovalfill/rectfill)\nbits 0x00FF.0000 are the usual colour bits\nbits 0x0000.FFFF are interpreted as the fill pattern"
+  },
+  {
+    "name": "add",
+    "category": "Table Functions",
+    "params": [
+      {
+        "name": "tbl",
+        "optional": false
+      },
+      {
+        "name": "val",
+        "optional": false
+      },
+      {
+        "name": "index",
+        "optional": true
+      }
+    ],
+    "desc": "Add value VAL to the end of table TBL. Equivalent to:\n\n```\nTBL[#TBL + 1] = VAL\n```\n\nIf index is given then the element is inserted at that position:\n\n```\nFOO={}        -- CREATE EMPTY TABLE\nADD(FOO, 11)\nADD(FOO, 22)\nPRINT(FOO[2]) -- 22\n```"
+  },
+  {
+    "name": "del",
+    "category": "Table Functions",
+    "params": [
+      {
+        "name": "tbl",
+        "optional": false
+      },
+      {
+        "name": "val",
+        "optional": false
+      }
+    ],
+    "desc": "Delete the first instance of value VAL in table TBL. The remaining entries are shifted left one index to avoid holes.\n\nNote that VAL is the value of the item to be deleted, not the index into the table. (To remove an item at a particular index, use DELI instead). DEL returns the deleted item, or returns no value when nothing was deleted.\n\n```\nA={1,10,2,11,3,12}\nFOR ITEM IN ALL(A) DO\n  IF (ITEM < 10) THEN DEL(A, ITEM) END\nEND\nFOREACH(A, PRINT) -- 10,11,12\nPRINT(A[3])       -- 12\n```"
+  },
+  {
+    "name": "deli",
+    "category": "Table Functions",
+    "params": [
+      {
+        "name": "tbl",
+        "optional": false
+      },
+      {
+        "name": "i",
+        "optional": true
+      }
+    ],
+    "desc": "Like DEL(), but remove the item from table TBL at index I When I is not given, the last element of the table is removed and returned."
+  },
+  {
+    "name": "count",
+    "category": "Table Functions",
+    "params": [
+      {
+        "name": "tbl",
+        "optional": false
+      },
+      {
+        "name": "val",
+        "optional": true
+      }
+    ],
+    "desc": "Returns the length of table t (same as #TBL) When VAL is given, returns the number of instances of VAL in that table."
+  },
+  {
+    "name": "all",
+    "category": "Table Functions",
+    "params": [
+      {
+        "name": "tbl",
+        "optional": false
+      }
+    ],
+    "desc": "Used in FOR loops to iterate over all items in a table (that have a 1-based integer index),  in the order they were added.\n\n```\nT = {11,12,13}\nADD(T,14)\nADD(T,\"HI\")\nFOR V IN ALL(T) DO PRINT(V) END -- 11 12 13 14 HI\nPRINT(#T) -- 5\n```"
+  },
+  {
+    "name": "foreach",
+    "category": "Table Functions",
+    "params": [
+      {
+        "name": "tbl",
+        "optional": false
+      },
+      {
+        "name": "func",
+        "optional": false
+      }
+    ],
+    "desc": "For each item in table TBL, call function FUNC with the item as a single parameter.\n\n```\n> FOREACH({1,2,3}, PRINT)\n```"
+  },
+  {
+    "name": "pairs",
+    "category": "Table Functions",
+    "params": [
+      {
+        "name": "tbl",
+        "optional": false
+      }
+    ],
+    "desc": "Used in FOR loops to iterate over table TBL, providing both the key and value for each item. Unlike ALL(), PAIRS() iterates over every item regardless of indexing scheme. Order is not guaranteed.\n\n```\nT = {[\"HELLO\"]=3, [10]=\"BLAH\"}\nT.BLUE = 5;\nFOR K,V IN PAIRS(T) DO\n  PRINT(\"K: \"..K..\"  V:\"..V)\nEND\n```\n\nOutput:\n\n```\nK: 10  v:BLAH\nK: HELLO  v:3\nK: BLUE  v:5\n```"
+  },
+  {
+    "name": "btn",
+    "category": "Input",
+    "params": [
+      {
+        "name": "b",
+        "optional": true
+      },
+      {
+        "name": "pl",
+        "optional": true
+      }
+    ],
+    "desc": "Get button B state for player PL (default 0)\n\nB: 0..5: left right up down button_o button_x PL: player index 0..7\n\nInstead of using a number for B, it is also possible to use a button glyph. (In the coded editor, use Shift-L R U D O X)\n\nIf no parameters supplied, returns a bitfield of all 12 button states for player 0 & 1 // P0: bits 0..5  P1: bits 8..13\n\nDefault keyboard mappings to player buttons:\n \n  player 0: [DPAD]: cursors, [O]: Z C N   [X]: X V M\n  player 1: [DPAD]: SFED,    [O]: LSHIFT  [X]: TAB W  Q A\n\nAlthough PICO-8 accepts all button combinations, note that it is generally impossible to press both LEFT and RIGHT at the same time on a physical game controller. On some controllers, UP + LEFT/RIGHT is also awkward if [X] or [O] could be used instead of UP (e.g. to jump / accelerate)."
+  },
+  {
+    "name": "btnp",
+    "category": "Input",
+    "params": [
+      {
+        "name": "b",
+        "optional": false
+      },
+      {
+        "name": "pl",
+        "optional": true
+      }
+    ],
+    "desc": "BTNP is short for \"Button Pressed\"; Instead of being true when a button is held down,  BTNP returns true when a button is down AND it was not down the last frame. It also repeats after 15 frames, returning true every 4 frames after that (at 30fps -- double that at 60fps). This can be used for things like menu navigation or grid-wise player  movement.\n\nThe state that BTNP reads is reset at the start of each call to _UPDATE or _UPDATE60, so it is preferable to use BTNP from inside one of those functions.\n\nCustom delays (in frames  30fps) can be set by poking the following memory addresses:\n\n```\nPOKE(0X5F5C, DELAY) -- SET THE INITIAL DELAY BEFORE REPEATING. 255 MEANS NEVER REPEAT.\nPOKE(0X5F5D, DELAY) -- SET THE REPEATING DELAY.\n```\n\nIn both cases, 0 can be used for the default behaviour (delays 15 and 4)"
+  },
+  {
+    "name": "sfx",
+    "category": "Audio",
+    "params": [
+      {
+        "name": "n",
+        "optional": false
+      },
+      {
+        "name": "channel",
+        "optional": true
+      },
+      {
+        "name": "offset",
+        "optional": true
+      },
+      {
+        "name": "length",
+        "optional": true
+      }
+    ],
+    "desc": "Play sfx N (0..63) on CHANNEL (0..3) from note OFFSET (0..31 in notes) for LENGTH notes.\n\nUsing negative CHANNEL values have special meanings:\n\nCHANNEL -1: (default) to automatically choose a channel that is not being used\nCHANNEL -2: to stop the given sound from playing on any channel\n\nN can be a command for the given CHANNEL (or all channels when CHANNEL < 0):\n\nN -1: to stop sound on that channel\nN -2: to release sound on that channel from looping\n\n```\nSFX(3)    --  PLAY SFX 3\nSFX(3,2)  --  PLAY SFX 3 ON CHANNEL 2\nSFX(3,-2) --  STOP SFX 3 FROM PLAYING ON ANY CHANNEL\nSFX(-1,2) --  STOP WHATEVER IS PLAYING ON CHANNEL 2\nSFX(-2,2) --  RELEASE LOOPING ON CHANNEL 2\nSFX(-1)   --  STOP ALL SOUNDS ON ALL CHANNELS\nSFX(-2)   --  RELEASE LOOPING ON ALL CHANNELS\n```"
+  },
+  {
+    "name": "music",
+    "category": "Audio",
+    "params": [
+      {
+        "name": "n",
+        "optional": false
+      },
+      {
+        "name": "fade_len",
+        "optional": true
+      },
+      {
+        "name": "channel_mask",
+        "optional": true
+      }
+    ],
+    "desc": "Play music starting from pattern N (0..63)\nN -1 to stop music\n \nFADE_LEN is in ms (default: 0). So to fade pattern 0 in over 1 second:\n\n```\nMUSIC(0, 1000)\n```\n\nCHANNEL_MASK specifies which channels to reserve for music only. For example, to play only on channels 0..2:\n\nMUSIC(0, NIL, 7) -- 1 | 2 | 4\n\nReserved channels can still be used to play sound effects on, but only when that channel index is explicitly requested by SFX()."
+  },
+  {
+    "name": "mget",
+    "category": "Map",
+    "params": [
+      {
+        "name": "x",
+        "optional": false
+      },
+      {
+        "name": "y",
+        "optional": false
+      }
+    ],
+    "desc": "Get or set map value (VAL) at X,Y\n\nWhen X and Y are out of bounds, MGET returns 0, or a custom return value that can be specified with:\n\n```\nPOKE(0x5f36, 0x10)\nPOKE(0x5f5a, NEWVAL)\n```"
+  },
+  {
+    "name": "mset",
+    "category": "Map",
+    "params": [
+      {
+        "name": "x",
+        "optional": false
+      },
+      {
+        "name": "y",
+        "optional": false
+      },
+      {
+        "name": "val",
+        "optional": false
+      }
+    ],
+    "desc": "Get or set map value (VAL) at X,Y\n\nWhen X and Y are out of bounds, MGET returns 0, or a custom return value that can be specified with:\n\n```\nPOKE(0x5f36, 0x10)\nPOKE(0x5f5a, NEWVAL)\n```"
+  },
+  {
+    "name": "map",
+    "category": "Map",
+    "params": [
+      {
+        "name": "tile_x",
+        "optional": false
+      },
+      {
+        "name": "tile_y",
+        "optional": false
+      },
+      {
+        "name": "sx",
+        "optional": true
+      },
+      {
+        "name": "sy",
+        "optional": true
+      },
+      {
+        "name": "tile_w",
+        "optional": true
+      },
+      {
+        "name": "tile_h",
+        "optional": true
+      },
+      {
+        "name": "layers",
+        "optional": true
+      }
+    ],
+    "desc": "Draw section of map (starting from TILE_X, TILE_Y) at screen position SX, SY (pixels).\n\nTo draw a 4x2 blocks of tiles starting from 0,0 in the map, to the screen at 20,20:\n\n```\nMAP(0, 0, 20, 20, 4, 2)\n```\n\nTILE_W and TILE_H default to the entire map (including shared space when applicable).\n\nMAP() is often used in conjunction with CAMERA(). To draw the map so that a player object (at PL.X in PL.Y in pixels) is centered:\n\n```\nCAMERA(PL.X - 64, PL.Y - 64)\nMAP()\n```\n\nLAYERS is a bitfield. When given, only sprites with matching sprite flags are drawn. For example, when LAYERS is 0x5, only sprites with flag 0 and 2 are drawn.\n\nSprite 0 is taken to mean \"empty\" and is not drawn. To disable this behaviour, use: POKE(0x5F36, 0x8)"
+  },
+  {
+    "name": "tline",
+    "category": "Map",
+    "params": [
+      {
+        "name": "x0",
+        "optional": false
+      },
+      {
+        "name": "y0",
+        "optional": false
+      },
+      {
+        "name": "x1",
+        "optional": false
+      },
+      {
+        "name": "y1",
+        "optional": false
+      },
+      {
+        "name": "mx",
+        "optional": false
+      },
+      {
+        "name": "my",
+        "optional": false
+      },
+      {
+        "name": "mdx",
+        "optional": true
+      },
+      {
+        "name": "mdy",
+        "optional": true
+      },
+      {
+        "name": "layers",
+        "optional": true
+      }
+    ],
+    "desc": "Draw a textured line from (X0,Y0) to (X1,Y1), sampling colour values from the map. When LAYERS is specified, only sprites with matching flags are drawn (similar to MAP())\n\nMX, MY are map coordinates to sample from, given in tiles. Colour values are sampled from the 8x8 sprite present at each map tile. For example:\n\n2.0, 1.0  means the top left corner of the sprite at position 2,1 on the map\n2.5, 1.5  means pixel (4,4) of the same sprite\n\nMDX, MDY are deltas added to mx, my after each pixel is drawn. (Defaults to 0.125, 0)\n\nThe map coordinates (MX, MY) are masked by values calculated by subtracting 0x0.0001 from the values at address 0x5F38 and 0x5F39. In simpler terms, this means you can loop a section of the map by poking the width and height you want to loop within, as  long as they are powers of 2 (2,4,8,16..)\n\nFor example, to loop every 8 tiles horizontally, and every 4 tiles vertically:\n\n```\nPOKE(0x5F38, 8)\nPOKE(0x5F39, 4)\nTLINE(...)\n```\n\nThe default values (0,0) gives a masks of 0xff.ffff, which means that the samples will loop every 256 tiles.\n\nAn offset to sample from (also in tiles) can also be specified at addresses 0x5f3a, 0x5f3b:\n\n```\nPOKE(0x5F3A, OFFSET_X)\nPOKE(0x5F3B, OFFSET_Y)\n```\n\nSprite 0 is taken to mean \"empty\" and not drawn. To disable this behaviour, use: POKE(0x5F36, 0x8)"
+  },
+  {
+    "name": "peek",
+    "category": "Memory",
+    "params": [
+      {
+        "name": "addr",
+        "optional": false
+      },
+      {
+        "name": "n",
+        "optional": true
+      }
+    ],
+    "desc": "Read a byte from an address in base ram. If N is specified, PEEK() returns that number of results (max: 8192). For example, to read the first 2 bytes of video memory:\n\n```\nA, B = PEEK(0x6000, 2)\n```\n\nWrite one or more bytes to an address in base ram. If more than one parameter is provided, they are written sequentially (max: 8192).\n\n16-bit and 32-bit versions of PEEK and POKE. Read and write one number (VAL) in little-endian format:\n\n16 bit: 0xffff.0000\n  32 bit: 0xffff.ffff\n\nADDR does not need to be aligned to 2 or 4-byte boundaries.\n\nAlternatively, the following operators can be used to peek (but not poke), and are slightly faster:\n\n```\n@ADDR  -- PEEK(ADDR)\n%ADDR  -- PEEK2(ADDR)\n$ADDR  -- PEEK4(ADDR)\n```"
+  },
+  {
+    "name": "memcpy",
+    "category": "Memory",
+    "params": [
+      {
+        "name": "dest_addr",
+        "optional": false
+      },
+      {
+        "name": "source_addr",
+        "optional": false
+      },
+      {
+        "name": "len",
+        "optional": false
+      }
+    ],
+    "desc": "Copy LEN bytes of base ram from source to dest. Sections can be overlapping"
+  },
+  {
+    "name": "reload",
+    "category": "Memory",
+    "params": [
+      {
+        "name": "dest_addr",
+        "optional": false
+      },
+      {
+        "name": "source_addr_len",
+        "optional": false
+      },
+      {
+        "name": "filename",
+        "optional": true
+      }
+    ],
+    "desc": "Same as MEMCPY, but copies from cart rom.\n\nThe code section ( >= 0x4300) is protected and can not be read.\n\nIf filename specified, load data from a separate cartridge. In this case, the cartridge must be local (BBS carts can not be read in this way)."
+  },
+  {
+    "name": "cstore",
+    "category": "Memory",
+    "params": [
+      {
+        "name": "dest_addr",
+        "optional": false
+      },
+      {
+        "name": "source_addr",
+        "optional": false
+      },
+      {
+        "name": "len",
+        "optional": false
+      },
+      {
+        "name": "filename",
+        "optional": true
+      }
+    ],
+    "desc": "Same as memcpy, but copies from base ram to cart rom.\n\nCSTORE() is equivalent to CSTORE(0, 0, 0x4300)\n\nThe code section ( >= 0x4300) is protected and can not be written to.\n\nIf FILENAME is specified, the data is written directly to that cartridge on disk. Up to 64 cartridges can be written in one session. See Cartridge Data for more information."
+  },
+  {
+    "name": "memset",
+    "category": "Memory",
+    "params": [
+      {
+        "name": "dest_addr",
+        "optional": false
+      },
+      {
+        "name": "val",
+        "optional": false
+      },
+      {
+        "name": "len",
+        "optional": false
+      }
+    ],
+    "desc": "Write the 8-bit value VAL into memory starting at DEST_ADDR, for LEN bytes.\n\nFor example, to fill half of video memory with 0xC8:\n\n```\n> MEMSET(0x6000, 0xC8, 0x1000)\n```"
+  },
+  {
+    "name": "max",
+    "category": "Math",
+    "params": [
+      {
+        "name": "x",
+        "optional": false
+      },
+      {
+        "name": "y",
+        "optional": false
+      }
+    ],
+    "desc": "Returns the maximum, minimum, or middle value of parameters\n\n```\n> ?MID(7,5,10) -- 7\n```"
+  },
+  {
+    "name": "min",
+    "category": "Math",
+    "params": [
+      {
+        "name": "x",
+        "optional": false
+      },
+      {
+        "name": "y",
+        "optional": false
+      }
+    ],
+    "desc": "Returns the maximum, minimum, or middle value of parameters\n\n```\n> ?MID(7,5,10) -- 7\n```"
+  },
+  {
+    "name": "mid",
+    "category": "Math",
+    "params": [
+      {
+        "name": "x",
+        "optional": false
+      },
+      {
+        "name": "y",
+        "optional": false
+      },
+      {
+        "name": "z",
+        "optional": false
+      }
+    ],
+    "desc": "Returns the maximum, minimum, or middle value of parameters\n\n```\n> ?MID(7,5,10) -- 7\n```"
+  },
+  {
+    "name": "flr",
+    "category": "Math",
+    "params": [
+      {
+        "name": "x",
+        "optional": false
+      }
+    ],
+    "desc": "```\n> ?FLR ( 4.1) -->  4\t\t\n> ?FLR (-2.3) --> -3\n```"
+  },
+  {
+    "name": "ceil",
+    "category": "Math",
+    "params": [
+      {
+        "name": "x",
+        "optional": false
+      }
+    ],
+    "desc": "Returns the closest integer that is equal to or below x\n\n```\n> ?CEIL( 4.1) -->  5\n> ?CEIL(-2.3) --> -2\n```"
+  },
+  {
+    "name": "cos",
+    "category": "Math",
+    "params": [
+      {
+        "name": "x",
+        "optional": false
+      }
+    ],
+    "desc": "Returns the cosine or sine of x, where 1.0 means a full turn. For example, to animate a dial that turns once every second:\n\n```\nFUNCTION _DRAW()\n  CLS()\n  CIRC(64, 64, 20, 7)\n  X = 64 + COS(T()) * 20\n  Y = 64 + SIN(T()) * 20\n  LINE(64, 64, X, Y)\t\nEND\n```\n\nPICO-8's SIN() returns an inverted result to suit screenspace (where Y means \"DOWN\", as opposed  to mathematical diagrams where Y typically means \"UP\").\n\n```\n> SIN(0.25) -- RETURNS -1\n```\n\nTo get conventional radian-based trig functions without the y inversion,  paste the following snippet near the start of your program:\n\n```\nP8COS = COS FUNCTION COS(ANGLE) RETURN P8COS(ANGLE/(3.1415*2)) END\nP8SIN = SIN FUNCTION SIN(ANGLE) RETURN -P8SIN(ANGLE/(3.1415*2)) END\n```\n\nConverts DX, DY into an angle from 0..1\n\nAs with cos/sin, angle is taken to run anticlockwise in screenspace. For example:\n\n```\n> ?ATAN(0, -1) -- RETURNS 0.25\n```\n\nATAN2 can be used to find the direction between two points:\n\n```\nX=20 Y=30\nFUNCTION _UPDATE()\n  IF (BTN(0)) X-=2\n  IF (BTN(1)) X+=2\n  IF (BTN(2)) Y-=2\n  IF (BTN(3)) Y+=2\t\nEND\n \nFUNCTION _DRAW()\n  CLS()\n  CIRCFILL(X,Y,2,14)\n  CIRCFILL(64,64,2,7)\n   \n  A=ATAN2(X-64, Y-64)\n  PRINT(\"ANGLE: \"..A)\n  LINE(64,64,\n    64+COS(A)*10,\n    64+SIN(A)*10,7)\nEND\n```"
+  },
+  {
+    "name": "sin",
+    "category": "Math",
+    "params": [
+      {
+        "name": "x",
+        "optional": false
+      }
+    ],
+    "desc": "Returns the cosine or sine of x, where 1.0 means a full turn. For example, to animate a dial that turns once every second:\n\n```\nFUNCTION _DRAW()\n  CLS()\n  CIRC(64, 64, 20, 7)\n  X = 64 + COS(T()) * 20\n  Y = 64 + SIN(T()) * 20\n  LINE(64, 64, X, Y)\t\nEND\n```\n\nPICO-8's SIN() returns an inverted result to suit screenspace (where Y means \"DOWN\", as opposed  to mathematical diagrams where Y typically means \"UP\").\n\n```\n> SIN(0.25) -- RETURNS -1\n```\n\nTo get conventional radian-based trig functions without the y inversion,  paste the following snippet near the start of your program:\n\n```\nP8COS = COS FUNCTION COS(ANGLE) RETURN P8COS(ANGLE/(3.1415*2)) END\nP8SIN = SIN FUNCTION SIN(ANGLE) RETURN -P8SIN(ANGLE/(3.1415*2)) END\n```\n\nConverts DX, DY into an angle from 0..1\n\nAs with cos/sin, angle is taken to run anticlockwise in screenspace. For example:\n\n```\n> ?ATAN(0, -1) -- RETURNS 0.25\n```\n\nATAN2 can be used to find the direction between two points:\n\n```\nX=20 Y=30\nFUNCTION _UPDATE()\n  IF (BTN(0)) X-=2\n  IF (BTN(1)) X+=2\n  IF (BTN(2)) Y-=2\n  IF (BTN(3)) Y+=2\t\nEND\n \nFUNCTION _DRAW()\n  CLS()\n  CIRCFILL(X,Y,2,14)\n  CIRCFILL(64,64,2,7)\n   \n  A=ATAN2(X-64, Y-64)\n  PRINT(\"ANGLE: \"..A)\n  LINE(64,64,\n    64+COS(A)*10,\n    64+SIN(A)*10,7)\nEND\n```"
+  },
+  {
+    "name": "sqrt",
+    "category": "Math",
+    "params": [
+      {
+        "name": "x",
+        "optional": false
+      }
+    ],
+    "desc": "Return the square root of x"
+  },
+  {
+    "name": "abs",
+    "category": "Math",
+    "params": [
+      {
+        "name": "x",
+        "optional": false
+      }
+    ],
+    "desc": "Returns the absolute (positive) value of x"
+  },
+  {
+    "name": "rnd",
+    "category": "Math",
+    "params": [
+      {
+        "name": "x",
+        "optional": false
+      }
+    ],
+    "desc": "Returns a random number n, where 0 <= n < x\n\nIf you want an integer, use flr(rnd(x)). If x is an array-style table, return a random element between table[1] and table[#table]."
+  },
+  {
+    "name": "srand",
+    "category": "Math",
+    "params": [
+      {
+        "name": "x",
+        "optional": false
+      }
+    ],
+    "desc": "Sets the random number seed. The seed is automatically randomized on cart startup.\n\n```\nFUNCTION _DRAW()\n  CLS()\n  SRAND(33)\n  FOR I=1,100 DO\n    PSET(RND(128),RND(128),7)\n  END\nEND\n```"
+  },
+  {
+    "name": "menuitem",
+    "category": "Custom Menu Items",
+    "params": [
+      {
+        "name": "index",
+        "optional": false
+      },
+      {
+        "name": "label",
+        "optional": true
+      },
+      {
+        "name": "callback",
+        "optional": true
+      }
+    ],
+    "desc": "Add or update an item to the pause menu.\n\nINDEX should be 1..5 and determines the order each menu item is displayed.\n\nLABEL should be a string up to 16 characters long\n\nCALLBACK is a function called when the item is selected by the user. If the callback returns true, the pause menu remains open.\n\nWhen no label or function is supplied, the menu item is removed.\n\n```\nMENUITEM(1, \"RESTART PUZZLE\",\n  FUNCTION() RESET_PUZZLE() SFX(10) END\n)\n```\n\nThe callback takes a single argument that is a bitfield of L,R,X button presses.\n\n```\nMENUITEM(1, \"FOO\", \n  FUNCTION(B) IF (B&1 > 0) THEN PRINTH(\"LEFT WAS PRESSED\") END END\n)\n```\n\nTo filter button presses that are able to trigger the callback, a mask can be  supplied in bits 0xff00 of INDEX. For example, to disable L, R for a particular menu item, set bits 0x300 in the index:\n\n```\nMENUITEM(2 | 0x300, \"RESET PROGRESS\",\n  FUNCTION() DSET(0,0) END\n)\n```\n\nMenu items can be updated, added or removed from within callbacks:\n\n```\nMENUITEM(3, \"SCREENSHAKE: OFF\",\n  FUNCTION()\n    SCREENSHAKE = NOT SCREENSHAKE\n    MENUITEM(NIL, \"SCREENSHAKE: \"..(SCREENSHAKE AND \"ON\" OR \"OFF\"))\n    RETURN TRUE -- DON'T CLOSE\n  END\n)\n```"
+  },
+  {
+    "name": "tostr",
+    "category": "Strings and Type Conversion",
+    "params": [
+      {
+        "name": "val",
+        "optional": false
+      },
+      {
+        "name": "format_flags",
+        "optional": true
+      }
+    ],
+    "desc": "Convert VAL to a string.\n\nFORMAT_FLAGS is a bitfield:\n\n0x1: Write the raw hexadecimal value of numbers, functions or tables.\n  0x2: Write VAL as a signed 32-bit integer by shifting it left by 16 bits.\n\nTOSTR(NIL) returns \"[nil]\"\n\nTOSTR() returns \"\"\n\n```\nTOSTR(17)       -- \"17\"\nTOSTR(17,0x1)   -- \"0x0011.0000\"\nTOSTR(17,0x3)   -- \"0x00110000\"\nTOSTR(17,0x2)   -- \"1114112\"\n```"
+  },
+  {
+    "name": "tonum",
+    "category": "Strings and Type Conversion",
+    "params": [
+      {
+        "name": "val",
+        "optional": false
+      },
+      {
+        "name": "format_flags",
+        "optional": true
+      }
+    ],
+    "desc": "Converts VAL to a number.\n\n```\nTONUM(\"17.5\")  -- 17.5\nTONUM(17.5)    -- 17.5\nTONUM(\"HOGE\")  -- NO RETURN VALUE\n```\n\nFORMAT_FLAGS is a bitfield:\n\n0x1: Read the string as written in (unsigned, integer) hexadecimal without the \"0x\" prefix\n       Non-hexadecimal characters are taken to be '0'.\n  0x2: Read the string as a signed 32-bit integer, and shift right 16 bits.\n  0x4: When VAL can not be converted to a number, return 0\n\n```\nTONUM(\"FF\",       0x1)  -- 255\nTONUM(\"1114112\",  0x2)  -- 17\nTONUM(\"1234abcd\", 0x3)  -- 0x1234.abcd\n```\n\nConvert one or more ordinal character codes to a string.\n\n```\nCHR(64)                    -- \"@\"\nCHR(104,101,108,108,111)   -- \"hello\"\n```"
+  },
+  {
+    "name": "ord",
+    "category": "Strings and Type Conversion",
+    "params": [
+      {
+        "name": "str",
+        "optional": false
+      },
+      {
+        "name": "index",
+        "optional": true
+      },
+      {
+        "name": "num_results",
+        "optional": true
+      }
+    ],
+    "desc": "Convert one or more characters from string STR to their ordinal (0..255) character codes.\n\nUse the INDEX parameter to specify which character in the string to use. When INDEX is out of range or str is not a string, ORD returns nil.\n\nWhen NUM_RESULTS is given, ORD returns multiple values starting from INDEX.\n\n```\nORD(\"@\")         -- 64\nORD(\"123\",2)     -- 50 (THE SECOND CHARACTER: \"2\")\nORD(\"123\",2,3)   -- 50,51,52\n```"
+  },
+  {
+    "name": "sub",
+    "category": "Strings and Type Conversion",
+    "params": [
+      {
+        "name": "str",
+        "optional": false
+      },
+      {
+        "name": "pos0",
+        "optional": false
+      },
+      {
+        "name": "pos1",
+        "optional": true
+      }
+    ],
+    "desc": "Grab a substring from string str, from pos0 up to and including pos1. When POS1 is not specified, the remainder of the string is returned. When POS1 is specified, but not a number, a single character at POS0 is returned.\n\n```\nS = \"THE QUICK BROWN FOX\"\nPRINT(SUB(S,5,9))    --> \"QUICK\"\nPRINT(SUB(S,5))      --> \"QUICK BROWN FOX\"\nPRINT(SUB(S,5,TRUE)) --> \"Q\"\n```"
+  },
+  {
+    "name": "split",
+    "category": "Strings and Type Conversion",
+    "params": [
+      {
+        "name": "str",
+        "optional": false
+      },
+      {
+        "name": "separator",
+        "optional": true
+      },
+      {
+        "name": "convert_numbers",
+        "optional": true
+      }
+    ],
+    "desc": "Split a string into a table of elements delimited by the given separator (defaults to \",\"). When separator is a number n, the string is split into n-character groups. When convert_numbers is true, numerical tokens are stored as numbers (defaults to true). Empty elements are stored as empty strings.\n\n```\nSPLIT(\"1,2,3\")               -- {1,2,3}\nSPLIT(\"ONE:TWO:3\",\":\",FALSE) -- {\"ONE\",\"TWO\",\"3\"}\nSPLIT(\"1,,2,\")               -- {1,\"\",2,\"\"}\n```"
+  },
+  {
+    "name": "type",
+    "category": "Strings and Type Conversion",
+    "params": [
+      {
+        "name": "val",
+        "optional": false
+      }
+    ],
+    "desc": "Returns the type of val as a string.\n\n```\n> PRINT(TYPE(3))\nNUMBER\n> PRINT(TYPE(\"3\"))\nSTRING\n```"
+  },
+  {
+    "name": "cartdata",
+    "category": "Cartridge Data",
+    "params": [
+      {
+        "name": "id",
+        "optional": false
+      }
+    ],
+    "desc": "Opens a permanent data storage slot indexed by ID that can be used to store and retrieve up to 256 bytes (64 numbers) worth of data using DSET() and DGET().\n\n```\nCARTDATA(\"ZEP_DARK_FOREST\")\nDSET(0, SCORE)\n```\n\nID is a string up to 64 characters long, and should be unusual enough that  other cartridges do not accidentally use the same id. Legal characters are a..z, 0..9 and underscore (_)\n\nReturns true if data was loaded, otherwise false.\n\nCARTDATA can be called once per cartridge execution, and so only a single data slot can be used.\n\nOnce a cartdata ID has been set, the area of memory 0X5E00..0X5EFF is mapped  to permanent storage, and can either be accessed directly or via DGET()/@DSET().\n\nThere is no need to flush written data -- it is automatically saved to permanent storage even if modified by directly POKE()'ing 0X5E00..0X5EFF."
+  },
+  {
+    "name": "dget",
+    "category": "Cartridge Data",
+    "params": [
+      {
+        "name": "index",
+        "optional": false
+      }
+    ],
+    "desc": "Get the number stored at INDEX (0..63)\n\nUse this only after you have called CARTDATA()"
+  },
+  {
+    "name": "dset",
+    "category": "Cartridge Data",
+    "params": [
+      {
+        "name": "index",
+        "optional": false
+      },
+      {
+        "name": "value",
+        "optional": false
+      }
+    ],
+    "desc": "Set the number stored at index (0..63)\n\nUse this only after you have called CARTDATA()"
+  },
+  {
+    "name": "serial",
+    "category": "GPIO",
+    "params": [
+      {
+        "name": "channel",
+        "optional": false
+      },
+      {
+        "name": "address",
+        "optional": false
+      },
+      {
+        "name": "length",
+        "optional": false
+      }
+    ],
+    "desc": "CHANNEL:\n  0x000..0x0fe    corresponds to gpio pin numbers; send 0x00 for LOW or 0xFF for HIGH\n  0x0ff           delay; length is taken to mean \"duration\" in microseconds (excl. overhead)\n  0x400..0x401    ws281x LED string (experimental)\n\nADDRESS: The PICO-8 memory location to read from / write to.\n\nLENGTH:  Number of bytes to send. 1/8ths are allowed to send partial bit strings.\n\nFor example, to send a byte one bit at a time to a typical APA102 LED string:\n\n```\nVAL = 42          -- VALUE TO SEND\nDAT = 16 CLK = 15 -- DATA AND CLOCK PINS DEPEND ON DEVICE\nPOKE(0X4300,0)    -- DATA TO SEND (SINGLE BYTES: 0 OR 0XFF)\nPOKE(0X4301,0XFF)\nFOR B=0,7 DO\n  -- SEND THE BIT (HIGH FIRST)\n  SERIAL(DAT, BAND(VAL, SHL(1,7-B))>0 AND 0X4301 OR 0X4300, 1)\n  -- CYCLE THE CLOCK\n  SERIAL(CLK, 0X4301)\n  SERIAL(0XFF, 5) -- DELAY 5\n  SERIAL(CLK, 0X4300)\n  SERIAL(0XFF, 5) -- DELAY 5\nEND\n```\n\nAdditional channels are available for bytestreams to and from the host operating system. These are intended to be most useful for UNIX-like environments while developing toolchains, and are not available while running a BBS or exported cart [1]. Maximum transfer rate in all  cases is 64k/sec (blocks cpu).\n\n0x800  dropped file   //  stat(120) returns TRUE when data is available\n0x802  dropped image  //  stat(121) returns TRUE when data is available\n0x804  stdin\n0x805  stdout\n0x806  file specified with: pico8 -i filename\n0x807  file specified with: pico8 -o filename\n\nImage files dropped into PICO-8 show up on channel 0x802 as a bytestream with a special format: The first 4 bytes are the image's width and height (2 bytes each little-endian, like PEEK2), followed by the image in reading order, one byte per pixel, colour-fitted to the display palette at the time the file was dropped.\n\n[1]\tChannels 0x800 and 0x802 are available from exported binaries, but with a maximum file size of 256k, or 128x128 for images."
+  },
+  {
+    "name": "setmetatable",
+    "category": "Additional Lua Features",
+    "params": [
+      {
+        "name": "tbl",
+        "optional": false
+      },
+      {
+        "name": "m",
+        "optional": false
+      }
+    ],
+    "desc": "Set table TBL metatable to M"
+  },
+  {
+    "name": "getmetatable",
+    "category": "Additional Lua Features",
+    "params": [
+      {
+        "name": "tbl",
+        "optional": false
+      }
+    ],
+    "desc": "return the current metatable for table t, or nil if none is set"
+  },
+  {
+    "name": "rawset",
+    "category": "Additional Lua Features",
+    "params": [
+      {
+        "name": "tbl",
+        "optional": false
+      },
+      {
+        "name": "key",
+        "optional": false
+      },
+      {
+        "name": "value",
+        "optional": false
+      }
+    ],
+    "desc": "Raw access to the table, as if no metamethods were defined."
+  },
+  {
+    "name": "rawget",
+    "category": "Additional Lua Features",
+    "params": [
+      {
+        "name": "tbl",
+        "optional": false
+      },
+      {
+        "name": "key",
+        "optional": false
+      }
+    ],
+    "desc": "Raw access to the table, as if no metamethods were defined."
+  },
+  {
+    "name": "rawlen",
+    "category": "Additional Lua Features",
+    "params": [
+      {
+        "name": "tbl",
+        "optional": false
+      }
+    ],
+    "desc": "Raw access to the table, as if no metamethods were defined."
+  },
+  {
+    "name": "cocreate",
+    "category": "Additional Lua Features",
+    "params": [
+      {
+        "name": "f",
+        "optional": false
+      }
+    ],
+    "desc": "Create a coroutine for function f.\n\nRun or continue the coroutine c. Parameters p0, p1.. are passed to the coroutine's function.\n\nReturns true if the coroutine completes without any errors Returns false, error_message if there is an error.\n\n** Runtime errors that occur inside coroutines do not cause the program to stop running. It is a good idea to wrap CORESUME() inside an ASSERT(). If the assert fails, it will print the error message generated by  coresume."
+  },
+  {
+    "name": "costatus",
+    "category": "Additional Lua Features",
+    "params": [
+      {
+        "name": "c",
+        "optional": false
+      }
+    ],
+    "desc": "Return the status of coroutine C as a string:\n  \"running\"\n  \"suspended\"\n  \"dead\""
+  },
+  {
+    "name": "yield",
+    "category": "Additional Lua Features",
+    "params": [],
+    "desc": "Suspend execution and return to the caller."
+  }
+]
