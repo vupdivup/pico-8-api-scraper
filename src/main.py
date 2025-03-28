@@ -1,17 +1,18 @@
 import requests
 import parse
 from argparse import ArgumentParser
+from constants import API_REFERENCE_URL
 
 def parse_http():
-    url = 'https://www.lexaloffle.com/' + \
-          'dl/docs/pico-8_manual.html#PICO_8_User_Manual'
+    print('Parsing {}...'.format(API_REFERENCE_URL))
     
-    r = requests.get(url)
+    r = requests.get(API_REFERENCE_URL)
     r.encoding = 'utf-8'
 
     parse.main(r.text)
 
 def parse_fallback():
+    print('Parsing fallback .html file...')
     with open('fallback/PICO-8 Manual.htm', 'r', encoding='utf-8') as f:
         parse.main(f.read())
 
